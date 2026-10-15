@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Тест: Тіла та речовини. Три стани речовин</title>
+<style>
+:root{
+  --card:rgba(255,255,255,.93);--text:#12324a;--muted:#5b7589;--line:#cfe3f1;
+  --accent:#1d7fd6;--ok:#1e9e5a;--okbg:#dff5e8;--bad:#d64545;--badbg:#fde4e4;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--card:rgba(12,28,48,.9);--text:#e8f3ff;--muted:#9bb6cc;--line:#2c4a66;--accent:#5bb8f0;--okbg:#123d2a;--badbg:#4a1f22;--ok:#4ade80;--bad:#f87171}
+}
+:root[data-theme="dark"]{--card:rgba(12,28,48,.9);--text:#e8f3ff;--muted:#9bb6cc;--line:#2c4a66;--accent:#5bb8f0;--okbg:#123d2a;--badbg:#4a1f22;--ok:#4ade80;--bad:#f87171}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100%;font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;color:var(--text);
+  background:linear-gradient(180deg,#d4f0ff 0%,#7cc8f5 35%,#2f86dc 70%,#1b4fa8 100%);background-attachment:fixed;
+  display:flex;justify-content:center;padding:20px 14px 40px;overflow-x:hidden}
+#bg{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.f{position:absolute;bottom:-60px;animation:rise linear infinite;opacity:.75}
+@keyframes rise{to{transform:translateY(-115vh) rotate(25deg)}}
+.wrap{position:relative;z-index:1;width:100%;max-width:680px}
+header{text-align:center;color:#fff;text-shadow:0 2px 8px rgba(10,40,90,.45);margin-bottom:14px}
+header h1{margin:0;font-size:clamp(20px,5vw,30px)}
+header p{margin:4px 0 0;opacity:.95;font-size:15px}
+.states{display:flex;justify-content:center;gap:10px;margin-top:8px;font-size:14px}
+.states span{background:rgba(255,255,255,.22);padding:4px 10px;border-radius:99px;backdrop-filter:blur(4px)}
+.card{background:var(--card);border-radius:20px;padding:22px;box-shadow:0 12px 40px rgba(8,38,90,.35);backdrop-filter:blur(8px)}
+.bar{height:10px;background:var(--line);border-radius:9px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#38bdf8,#6366f1);transition:width .4s}
+.meta{display:flex;justify-content:space-between;color:var(--muted);font-size:14px;margin:8px 0 14px}
+h2{font-size:clamp(18px,4.5vw,22px);margin:0 0 16px;line-height:1.35}
+.opt{display:flex;gap:12px;align-items:center;width:100%;text-align:left;font:inherit;color:var(--text);background:transparent;
+  border:2px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px;cursor:pointer;transition:.15s}
+.opt:hover:not(:disabled){border-color:var(--accent);transform:translateX(3px)}
+.opt b{flex:none;width:30px;height:30px;border-radius:50%;background:var(--line);display:grid;place-items:center;font-size:14px}
+.opt.ok{background:var(--okbg);border-color:var(--ok)}.opt.ok b{background:var(--ok);color:#fff}
+.opt.bad{background:var(--badbg);border-color:var(--bad)}.opt.bad b{background:var(--bad);color:#fff}
+.opt:disabled{cursor:default}
+.fb{min-height:24px;font-weight:600;margin:4px 0 10px}
+.btn{font:inherit;font-weight:700;color:#fff;background:linear-gradient(90deg,#1d7fd6,#6366f1);border:0;border-radius:12px;padding:12px 22px;cursor:pointer}
+.btn:disabled{opacity:.4;cursor:default}
+.right{text-align:right}
+.score{text-align:center}.score .big{font-size:56px;font-weight:800;color:var(--accent);margin:6px 0}
+.rev{text-align:left;margin:16px 0;padding:0;list-style:none}
+.rev li{background:var(--badbg);border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:15px}
+.rev small{display:block;color:var(--muted)}
+</style>
+</head>
+<body>
+<div id="bg" aria-hidden="true"></div>
+<div class="wrap">
+  <header>
+    <h1>🌍 Тіла та речовини</h1>
+    <p>Три стани речовин · Природознавство, 5 клас</p>
+    <div class="states"><span>🧊 твердий</span><span>💧 рідкий</span><span>☁️ газоподібний</span></div>
+  </header>
+  <main class="card" id="app"></main>
+</div>
+<script>
+const Q=[
+["Що в природознавстві називають фізичним тілом?",["Лише живий організм","Тільки рідину","Будь-який предмет або об’єкт","Лише природна речовина"],2],
+["Що з наведеного є речовиною?",["Склянка","Олівець","М’яч","Залізо"],3],
+["З чого складається дерев’яний стіл?",["Із пари","Із деревини","Із води","Із повітря"],1],
+["Які три основні стани речовини вивчають у 5 класі?",["Твердий, м’який, крихкий","Твердий, рідкий, газоподібний","Великий, середній, малий","Холодний, теплий, гарячий"],1],
+["Яка властивість характерна для твердих тіл?",["Зберігають власну форму","Не мають власного об’єму","Завжди заповнюють усю посудину","Завжди набувають форми посудини"],0],
+["Яка властивість характерна для рідин?",["Мають власну форму й не течуть","Не мають об’єму","Завжди заповнюють усю посудину","Набувають форми посудини та зберігають об’єм"],3],
+["Яка властивість характерна для газів?",["Зберігають сталий об’єм у відкритій посудині","Не можуть змінювати свій об’єм","Заповнюють увесь доступний простір","Мають сталу власну форму"],2],
+["У якому стані перебуває лід за звичайних умов нижче 0 °C?",["У твердому","У плазмовому","У рідкому","У газоподібному"],0],
+["У якому стані перебуває вода в склянці за кімнатної температури?",["У газоподібному","У рідкому","У плазмовому","У твердому"],1],
+["Що відбувається з льодом під час танення?",["Він перетворюється на водяну пару","Він перетворюється на камінь","Він перетворюється на рідку воду","Він перетворюється на повітря"],2],
+["Як називається перехід речовини з рідкого стану в газоподібний?",["Пароутворення","Танення","Замерзання","Конденсація"],0],
+["Як називається перехід водяної пари в рідку воду?",["Танення","Конденсація","Випаровування","Замерзання"],1],
+["Що з наведеного є газоподібною речовиною за звичайних умов?",["Цукор","Кисень","Рослинна олія","Кухонна сіль"],1],
+["Яке з наведених тіл є природним?",["Гірський камінь","Скляна пляшка","Металева ложка","Пластикова лінійка"],0],
+["Який приклад правильно поєднує тіло та речовину, з якої воно виготовлене?",["Повітря — камінь","Пара — дерев’яний стіл","Вода — склянка","Залізо — цвях"],3],
+["Чому рідина набуває форми посудини, у яку її наливають?",["Бо рідина не має власної форми","Бо рідина завжди перетворюється на газ","Бо рідина не має маси","Бо рідина складається лише з повітря"],0],
+["Що станеться з повітрям, якщо його закачати в закриту повітряну кульку?",["Воно зникне без сліду","Воно заповнить доступний внутрішній простір кульки","Воно набуде форми твердого куба","Воно перетвориться на рідину"],1],
+["Який із наведених прикладів демонструє випаровування?",["Утворення крапель на холодному склі","Висихання калюжі після дощу","Танення снігу навесні","Утворення льоду в морозильнику"],1],
+["Що спільного мають тверді тіла та рідини за звичайних умов?",["Обидва стани не мають маси","Обидва мають певний об’єм","Обидва не можуть змінювати форму","Обидва завжди заповнюють усю посудину"],1],
+["Яка речовина за звичайних умов може перебувати в усіх трьох станах: твердому, рідкому й газоподібному?",["Вода","Цукор","Залізо","Кухонна сіль"],0]
+];
+const L="АБВГ",app=document.getElementById("app");
+let i=0,score=0,wrong=[],answered=false;
+
+// фон: плаваючі лід, краплі, хмаринки
+const bg=document.getElementById("bg"),em=["🧊","💧","☁️","❄️","💨","💧","🫧"];
+for(let k=0;k<22;k++){const s=document.createElement("span");s.className="f";s.textContent=em[k%em.length];
+ s.style.left=Math.random()*100+"%";s.style.fontSize=(18+Math.random()*34)+"px";
+ s.style.animationDuration=(14+Math.random()*18)+"s";s.style.animationDelay=(-Math.random()*30)+"s";bg.appendChild(s);}
+
+function esc(t){return t.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+function show(){
+  answered=false;const [q,o]=Q[i];
+  app.innerHTML=`<div class="bar"><i style="width:${i/Q.length*100}%"></i></div>
+  <div class="meta"><span>Питання ${i+1} з ${Q.length}</span><span>⭐ ${score}</span></div>
+  <h2>${esc(q)}</h2>
+  ${o.map((t,k)=>`<button class="opt" data-k="${k}"><b>${L[k]}</b><span>${esc(t)}</span></button>`).join("")}
+  <div class="fb" id="fb"></div>
+  <div class="right"><button class="btn" id="next" disabled>${i==Q.length-1?"Результат":"Далі →"}</button></div>`;
+  app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>pick(+b.dataset.k));
+  document.getElementById("next").onclick=()=>{i++;i<Q.length?show():end()};
+}
+function pick(k){
+  if(answered)return;answered=true;const c=Q[i][2],bs=app.querySelectorAll(".opt"),fb=document.getElementById("fb");
+  bs.forEach(b=>b.disabled=true);bs[c].classList.add("ok");
+  if(k===c){score++;fb.textContent="✅ Правильно!";fb.style.color="var(--ok)"}
+  else{bs[k].classList.add("bad");wrong.push(i);fb.textContent="❌ Правильна відповідь: "+L[c]+". "+Q[i][1][c];fb.style.color="var(--bad)"}
+  document.getElementById("next").disabled=false;
+}
+function end(){
+  const p=Math.round(score/Q.length*100);
+  const msg=p>=90?"Чудово! Ти справжній знавець природи! 🏆":p>=70?"Дуже добре! Ще трохи — і буде ідеально! 👍":p>=50?"Непогано. Повтори тему й спробуй ще раз 📚":"Потрібно повторити матеріал. У тебе вийде! 💪";
+  app.innerHTML=`<div class="score"><div class="bar"><i style="width:100%"></i></div>
+  <div class="big">${score} / ${Q.length}</div><h2>${p}% — ${msg}</h2>
+  ${wrong.length?`<p style="text-align:left;font-weight:700">Над чим варто попрацювати:</p><ul class="rev">${wrong.map(n=>`<li>${n+1}. ${esc(Q[n][0])}<small>Правильно: ${esc(Q[n][1][Q[n][2]])}</small></li>`).join("")}</ul>`:"<p>Жодної помилки! 🎉</p>"}
+  <button class="btn" id="again">Пройти ще раз</button></div>`;
+  document.getElementById("again").onclick=()=>{i=0;score=0;wrong=[];show()};
+}
+show();
+</script>
+</body>
+</html>
